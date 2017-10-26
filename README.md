@@ -19,8 +19,8 @@ including the title, release date, director, and the cast.
 
 HINTS:
 
-* Modify the code so that when a search is performed (and at least one match is found), store all of the movie information in `this.state` instead of just the poster url.  
-* Use the movie data to render the entire UI.  
+* Store data for the current movie in `this.state` instead of just the poster url.  
+* Use the movie data to drive the UI.  
 * When you're done, you shouldn't need the `searched` data member any longer.
 * You'll need to use another API call to retrieve the release date, director, and cast (see below).
 
