@@ -21,6 +21,7 @@ class MoviesApp extends React.Component {
     movie_search_url += "&query=" + this.state.title;
     fetch(movie_search_url).then(this.parseResponse).then(this.showMovie);
     this.setState({ title: "" });
+
   }
 
   parseResponse = (response) => { return response.json(); }
@@ -30,9 +31,25 @@ class MoviesApp extends React.Component {
     if (data.results.length > 0) {
       let movie = data.results[0]
       this.setState({ movie: movie })
+      let key = 'bde024f3eb43f597aafe01ed9c9098c6'
+      let details_url = `https://api.themoviedb.org/3/movie/${movie.id}/credits?api_key=${key}`
+      fetch(details_url).then(this.parseResponse).then(this.showDetails)
     } else {
       this.setState({ movie: null })
     }
+  }
+
+  showDetails = (data) => {
+    console.debug(data)
+    let the_movie = this.state.movie
+    let the_director = data.crew.find((element) => {
+      return (element.job == 'Director');
+    });
+    the_movie.director = the_director.name
+
+    the_movie.cast = data.cast.slice(0, 3)
+
+    this.setState({ movie: the_movie })
   }
 
   handleAddFavorite = (event) => {
@@ -52,6 +69,12 @@ class MoviesApp extends React.Component {
 
     if (this.state.movie) {
       addLink = <a href="#" onClick={this.handleAddFavorite} className="btn btn-primary" id="addFavorite">Add to Favorites</a>
+    }
+    let the_cast = [<li>Actor #1 plays Character #1</li>]
+    if (this.state.movie && this.state.movie.cast) {
+      the_cast = this.state.movie.cast.map((actor) => {
+        return <li key={actor.character}>{actor.name} plays {actor.character}</li>
+      })
     }
 
     return (
@@ -93,12 +116,10 @@ class MoviesApp extends React.Component {
                 </p>
               </div>
               <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>Directed By:</strong> Famous Director</li>
+                <li class="list-group-item"><strong>Directed By:</strong> {this.state.movie && this.state.movie.director }</li>
                 <li class="list-group-item"><strong>Starring:</strong>
                   <ul>
-                    <li>Actor #1 as Character #1</li>
-                    <li>Actor #2 as Character #2</li>
-                    <li>Actor #3 as Character #3</li>
+                    {the_cast}
                   </ul>
                 </li>
               </ul>
